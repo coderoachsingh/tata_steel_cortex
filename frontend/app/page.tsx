@@ -5,20 +5,24 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 
 export default function CortexDashboard() {
 
-  // --- 1. STATE MANAGEMENT ---
+// --- 1. STATE MANAGEMENT ---
   const [targetDate, setTargetDate] = useState("2022-01-01");
   const [aiSummary, setAiSummary] = useState("");
   const [orders, setOrders] = useState<any[]>([]);
   const [alarms, setAlarms] = useState<any[]>([]);
   
-  // 🚀 FIXED: Replaced 'loading' with the variables your UI expects
   const [isScanning, setIsScanning] = useState(false); 
   const [isThinking, setIsThinking] = useState(false); 
   
   const [syncStatus, setSyncStatus] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"dashboard" | "procurement">("dashboard");
 
-  const API_BASE = "http://127.0.0.1:8000";
+  // CLOUD FIX: Points directly to your running FastAPI backend (without /docs)
+  const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL || "http://13.232.243.70:8000";
+  
+  // CLOUD FIX: Point this to the upcoming Auth Frontend URL (we can use localhost for now, or update it later)
+  const AUTH_PORTAL_URL = process.env.NEXT_PUBLIC_AUTH_PORTAL_URL || "http://localhost:3001";
+
 
   // --- 2. API FUNCTIONS ---
   const draftOrders = async () => {
@@ -100,9 +104,10 @@ export default function CortexDashboard() {
     document.body.removeChild(link);
   };
 
+ 
   // --- 4. AUTHENTICATION ---
   const handleLogout = () => {
-    window.location.href = "http://localhost:3001";
+    window.location.href = AUTH_PORTAL_URL;
   };
 
 // --- 5. UI UPGRADE: SAFEGUARD FORMATTER ---

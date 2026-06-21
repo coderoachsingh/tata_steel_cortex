@@ -6,22 +6,26 @@ export default function CortexLoginPortal() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const handleLogin = async (e: React.FormEvent) => {
+const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     
+    // 1. DYNAMIC CLOUD VARIABLES
+    const authServerUrl = process.env.NEXT_PUBLIC_AUTH_SERVER_URL || "http://3.109.202.64:4000";
+    const dashboardUrl = process.env.NEXT_PUBLIC_DASHBOARD_URL || "http://localhost:3000";
+
     try {
-      // Call the Node.js Auth Server on Port 4000
-      const res = await fetch("http://localhost:4000/api/auth/login", {
+      // 2. USE THE NEW AUTH VARIABLE HERE
+      const res = await fetch(`${authServerUrl}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include", // Ensures the token survives the redirect
+        credentials: "include", 
         body: JSON.stringify({ username, password }),
       });
 
       if (res.ok) {
-        // Successful login: Redirect back to the Main Control Tower
-        window.location.href = "http://localhost:3000/"; 
+        // 3. USE THE NEW DASHBOARD VARIABLE HERE
+        window.location.href = dashboardUrl; 
       } else {
         setError("Unrecognized Operator ID or Passcode.");
       }
@@ -29,7 +33,7 @@ export default function CortexLoginPortal() {
       setError("Unable to connect to authentication server.");
     }
   };
-
+  
   return (
     <div 
       className="min-h-screen flex flex-col items-center justify-center font-sans text-slate-200 selection:bg-blue-500/30"
