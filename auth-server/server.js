@@ -10,7 +10,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Allow the Login Portal to communicate with this API
-app.use(cors({ origin: 'http://localhost:3001', credentials: true })); 
+app.use(cors({ origin: 'https://master.di7fhjhw0ua49.amplifyapp.com/', credentials: true })); 
 
 const JWT_SECRET = process.env.JWT_SECRET || "super_secret_enterprise_key_2026";
 

@@ -21,7 +21,7 @@ export default function CortexDashboard() {
   const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL || "http://13.232.243.70:8000";
   
   // CLOUD FIX: Point this to the upcoming Auth Frontend URL (we can use localhost for now, or update it later)
-  const AUTH_PORTAL_URL = process.env.NEXT_PUBLIC_AUTH_PORTAL_URL || "http://localhost:3001";
+  const AUTH_PORTAL_URL = process.env.NEXT_PUBLIC_AUTH_PORTAL_URL || "https://master.di7fhjhw0ua49.amplifyapp.com/";
 
 
   // --- 2. API FUNCTIONS ---
