@@ -18,7 +18,7 @@ export default function CortexDashboard() {
   const [activeTab, setActiveTab] = useState<"dashboard" | "procurement">("dashboard");
 
   // CLOUD FIX: Points directly to your running FastAPI backend (without /docs)
-  const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL || "http://13.232.243.70:8000";
+  const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL || "http://13.206.119.97:8000";
   
   // CLOUD FIX: Point this to the upcoming Auth Frontend URL (we can use localhost for now, or update it later)
   const AUTH_PORTAL_URL = process.env.NEXT_PUBLIC_AUTH_PORTAL_URL || "https://master.di7fhjhw0ua49.amplifyapp.com/";
