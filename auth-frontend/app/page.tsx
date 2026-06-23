@@ -24,18 +24,19 @@ const handleLogin = async (e: React.FormEvent) => {
       // 2. Grab the JSON response to extract the token your backend sent
       const data = await res.json(); 
 
-      if (res.ok && data.token) {
-        setError("Access Granted! Teleporting to dashboard...");
-        // 3. TOKEN HAND-OFF: Pass the token securely in the URL so the Dashboard can catch it and save it!
-        window.location.href = `${dashboardUrl}?token=${data.token}`; 
-      } else {
+      // Inside your handleLogin function
+if (res.ok) {
+  const data = await res.json(); // Get the response data
+  // Pass the token as a URL parameter
+  window.location.href = `${dashboardUrl}?token=${data.token}`; 
+}  else {
         setError(data.message || "Unrecognized Operator ID or Passcode.");
       }
     } catch (err) {
       setError("Network Crash: Unable to reach the secure bridge.");
     }
   };
-  
+
   return (
     <div 
       className="min-h-screen flex flex-col items-center justify-center font-sans text-slate-200 selection:bg-blue-500/30"
