@@ -8,33 +8,34 @@ export default function CortexLoginPortal() {
 
 const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("Authenticating... Please wait."); // Shows you the button actually clicked
+    setError("Authenticating... Please wait.");
     
     const dashboardUrl = process.env.NEXT_PUBLIC_DASHBOARD_URL || "https://master.d3eu8k50qzo0ky.amplifyapp.com";
 
     try {
-        const res = await fetch(`http://43.204.232.236:4000/api/auth/login`, {
+      // 1. RELATIVE PATH: Hits your secure Next.js proxy, bypassing browser Mixed Content blocks!
+      const res = await fetch(`/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include", 
         body: JSON.stringify({ username, password }),
       });
 
-      // 🚨 NEW: We are grabbing the EXACT raw text the server sends back
-      const responseText = await res.text(); 
+      // 2. Grab the JSON response to extract the token your backend sent
+      const data = await res.json(); 
 
-      if (res.ok) {
+      if (res.ok && data.token) {
         setError("Access Granted! Teleporting to dashboard...");
-        window.location.href = dashboardUrl; 
+        // 3. TOKEN HAND-OFF: Pass the token securely in the URL so the Dashboard can catch it and save it!
+        window.location.href = `${dashboardUrl}?token=${data.token}`; 
       } else {
-        // 🚨 NEW: This will print the exact HTTP status code and error message to your screen
-        setError(`Failed (Status ${res.status}): ${responseText.substring(0, 100)}`);
+        setError(data.message || "Unrecognized Operator ID or Passcode.");
       }
-    } catch (err: any) {
-      // 🚨 NEW: This catches total network failures
-      setError(`Network Crash: ${err.message}`);
+    } catch (err) {
+      setError("Network Crash: Unable to reach the secure bridge.");
     }
   };
+  
   return (
     <div 
       className="min-h-screen flex flex-col items-center justify-center font-sans text-slate-200 selection:bg-blue-500/30"
