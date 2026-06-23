@@ -48,7 +48,7 @@ app.post('/api/auth/login', (req, res) => {
             maxAge: 8 * 60 * 60 * 1000 
         });
 
-        return res.json({ success: true, message: "Authentication successful." });
+        return res.json({ success: true, message: "Authentication successful.", token: token });
     }
 
     return res.status(401).json({ success: false, message: "Invalid credentials." });
