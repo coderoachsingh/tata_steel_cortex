@@ -24,12 +24,10 @@ const handleLogin = async (e: React.FormEvent) => {
       // 2. Grab the JSON response to extract the token your backend sent
       const data = await res.json(); 
 
-      // Inside your handleLogin function
-if (res.ok) {
-  const data = await res.json(); // Get the response data
-  // Pass the token as a URL parameter
-  window.location.href = `${dashboardUrl}?token=${data.token}`; 
-}  else {
+      if (res.ok) {
+        // Pass the token as a URL parameter
+        window.location.href = `${dashboardUrl}?token=${data.token}`; 
+      } else {
         setError(data.message || "Unrecognized Operator ID or Passcode.");
       }
     } catch (err) {
