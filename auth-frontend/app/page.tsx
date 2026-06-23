@@ -8,14 +8,11 @@ export default function CortexLoginPortal() {
 
 const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    setError("Authenticating... Please wait."); // Shows you the button actually clicked
     
-    // We only need the dashboard URL now. The authServerUrl is handled invisibly by next.config.ts!
     const dashboardUrl = process.env.NEXT_PUBLIC_DASHBOARD_URL || "https://master.d3eu8k50qzo0ky.amplifyapp.com";
 
     try {
-      // 🚨 NOTICE THE CHANGE HERE: We completely removed the authServerUrl variable!
-      // By starting with exactly "/api...", it routes through your secure Next.js proxy.
       const res = await fetch(`/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -23,16 +20,21 @@ const handleLogin = async (e: React.FormEvent) => {
         body: JSON.stringify({ username, password }),
       });
 
+      // 🚨 NEW: We are grabbing the EXACT raw text the server sends back
+      const responseText = await res.text(); 
+
       if (res.ok) {
+        setError("Access Granted! Teleporting to dashboard...");
         window.location.href = dashboardUrl; 
       } else {
-        setError("Unrecognized Operator ID or Passcode.");
+        // 🚨 NEW: This will print the exact HTTP status code and error message to your screen
+        setError(`Failed (Status ${res.status}): ${responseText.substring(0, 100)}`);
       }
-    } catch (err) {
-      setError("Unable to connect to authentication server.");
+    } catch (err: any) {
+      // 🚨 NEW: This catches total network failures
+      setError(`Network Crash: ${err.message}`);
     }
   };
-  
   return (
     <div 
       className="min-h-screen flex flex-col items-center justify-center font-sans text-slate-200 selection:bg-blue-500/30"
