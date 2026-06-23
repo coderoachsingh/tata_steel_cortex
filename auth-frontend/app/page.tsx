@@ -11,7 +11,7 @@ const handleLogin = async (e: React.FormEvent) => {
     setError("");
     
     // 1. DYNAMIC CLOUD VARIABLES
-    const authServerUrl = process.env.NEXT_PUBLIC_AUTH_SERVER_URL || "http://43.204.232.34:4000";
+    const authServerUrl = process.env.NEXT_PUBLIC_AUTH_SERVER_URL || "http://43.205.243.221:4000";
     const dashboardUrl = process.env.NEXT_PUBLIC_DASHBOARD_URL || "https://master.d3eu8k50qzo0ky.amplifyapp.com";
  
 
