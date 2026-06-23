@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
         // When the browser securely asks for this path...
         source: '/api/auth/:path*',
         // ...Next.js secretly forwards it to your Fargate IP!
-        destination: 'http://43.204.232.236/api/auth/:path*' 
+        destination: 'http://43.204.232.236:4000/api/auth/:path*'
       }
     ]
   }
