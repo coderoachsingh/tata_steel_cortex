@@ -1,15 +1,14 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-// NEXT.JS 16 FIX: This function MUST be named "proxy" or exported as default.
-export function proxy(request: NextRequest) {
+export function middleware(request: NextRequest) {
     // 1. Look for the JWT cookie
     const token = request.cookies.get('auth_token')?.value;
 
     // 2. If no token is found, redirect them to the dedicated Auth Website
     if (!token) {
         // We append where they were trying to go so we can send them back later
-        const loginUrl = new URL('http://localhost:3001');
+        const loginUrl = new URL('https://master.di7fhjhw0ua49.amplifyapp.com', request.url);
         loginUrl.searchParams.set('redirect', request.nextUrl.pathname);
         return NextResponse.redirect(loginUrl);
     }
