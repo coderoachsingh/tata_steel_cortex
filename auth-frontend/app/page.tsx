@@ -13,7 +13,7 @@ const handleLogin = async (e: React.FormEvent) => {
     const dashboardUrl = process.env.NEXT_PUBLIC_DASHBOARD_URL || "https://master.d3eu8k50qzo0ky.amplifyapp.com";
 
     try {
-      const res = await fetch(`/api/auth/login`, {
+        const res = await fetch(`http://43.204.232.236:4000/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include", 
