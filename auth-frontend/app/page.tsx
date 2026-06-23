@@ -10,14 +10,13 @@ const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     
-    // 1. DYNAMIC CLOUD VARIABLES
-    const authServerUrl = process.env.NEXT_PUBLIC_AUTH_SERVER_URL || "http://43.205.243.221:4000";
+    // We only need the dashboard URL now. The authServerUrl is handled invisibly by next.config.ts!
     const dashboardUrl = process.env.NEXT_PUBLIC_DASHBOARD_URL || "https://master.d3eu8k50qzo0ky.amplifyapp.com";
- 
 
     try {
-      // 2. USE THE NEW AUTH VARIABLE HERE
-      const res = await fetch(`${authServerUrl}/api/auth/login`, {
+      // 🚨 NOTICE THE CHANGE HERE: We completely removed the authServerUrl variable!
+      // By starting with exactly "/api...", it routes through your secure Next.js proxy.
+      const res = await fetch(`/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include", 
@@ -25,7 +24,6 @@ const handleLogin = async (e: React.FormEvent) => {
       });
 
       if (res.ok) {
-        // 3. USE THE NEW DASHBOARD VARIABLE HERE
         window.location.href = dashboardUrl; 
       } else {
         setError("Unrecognized Operator ID or Passcode.");
