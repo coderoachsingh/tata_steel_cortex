@@ -123,6 +123,7 @@ def ask_agent(request: AskRequest):
         alarm_data = generate_orders(GenerateOrdersRequest(target_date=request.target_date))
         critical_alarms = [a["message"] for a in alarm_data["alarms"] if a["severity"] == "CRITICAL"]
         
+       # ... existing code ...
         # 1. The strict system directive using standard strings to prevent """ leakage
         system_prompt = SystemMessage(content=(
             "You are Cortex, an advanced Supply Chain AI. "
@@ -133,15 +134,17 @@ def ask_agent(request: AskRequest):
             "Do not include triple quotes in your response."
         ))
         
-        # 2. The data payload
+        # 2. The data payload - NOW INCLUDES INSTRUCTIONS FOR TOOL ARGUMENTS
         user_prompt = HumanMessage(content=(
             f"Date: {request.target_date}\n\n"
             f"System Alarms Triggered Today:\n"
             f"{chr(10).join(critical_alarms) if critical_alarms else 'No critical alarms.'}\n\n"
-            "Based ONLY on these alarms, execute necessary tools and write the structured action plan."
+            "Based ONLY on these alarms, execute necessary tools and write the structured action plan. "
+            "When executing the 'send_emergency_email' tool, use 'ALL REGIONS' for the region argument, 'CRITICAL' for the severity argument, and summarize the alarms for the message argument."
         ))
         
         print("Executing LangGraph Agent...")
+        # ... existing code ...
         
         # 3. Fire the actual LangGraph agent
         result = cortex_graph.invoke({"messages": [system_prompt, user_prompt]})
