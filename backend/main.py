@@ -112,6 +112,7 @@ def generate_orders(request: GenerateOrdersRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+# ... existing code ...
 @app.post("/api/ask")
 def ask_agent(request: AskRequest):
     print(f"\n--- WAKING UP AI THREAT ANALYST: {request.target_date} ---")
@@ -122,40 +123,42 @@ def ask_agent(request: AskRequest):
         alarm_data = generate_orders(GenerateOrdersRequest(target_date=request.target_date))
         critical_alarms = [a["message"] for a in alarm_data["alarms"] if a["severity"] == "CRITICAL"]
         
-        # 1. The strict system directive that FORCES tool usage
-        system_prompt = SystemMessage(content="""
-        You are Cortex, an advanced Supply Chain AI. Analyze the provided data and generate a Predictive Action Plan.
-        
-        CRITICAL DIRECTIVE: 
-        If the data contains ANY anomalies or shortages marked as "CRITICAL" or "EPIDEMIC", you MUST autonomously execute the `send_emergency_email` tool to notify the warehouse managers BEFORE you output your final text summary. Do not ask for permission.
-        """)
+        # 1. The strict system directive using standard strings to prevent """ leakage
+        system_prompt = SystemMessage(content=(
+            "You are Cortex, an advanced Supply Chain AI. "
+            "CRITICAL DIRECTIVE: You have access to the 'send_emergency_email' tool. "
+            "If the data contains ANY anomalies marked as 'CRITICAL' or 'EPIDEMIC', you MUST physically execute the 'send_emergency_email' tool. "
+            "DO NOT draft an email in your text response. "
+            "After tool execution, your final output MUST be a highly structured, professional 3-bullet Predictive Action Plan formatted in clean markdown. "
+            "Do not include triple quotes in your response."
+        ))
         
         # 2. The data payload
-        user_prompt = HumanMessage(content=f"""
-        Date: {request.target_date}
-        
-        System Alarms Triggered Today:
-        {chr(10).join(critical_alarms) if critical_alarms else "No critical alarms."}
-        
-        Based ONLY on these alarms, write a highly urgent, professional 3-bullet action plan for the supply chain managers.
-        """)
+        user_prompt = HumanMessage(content=(
+            f"Date: {request.target_date}\n\n"
+            f"System Alarms Triggered Today:\n"
+            f"{chr(10).join(critical_alarms) if critical_alarms else 'No critical alarms.'}\n\n"
+            "Based ONLY on these alarms, execute necessary tools and write the structured action plan."
+        ))
         
         print("Executing LangGraph Agent...")
         
-        # 3. Fire the actual LangGraph agent instead of a raw HTTP request!
+        # 3. Fire the actual LangGraph agent
         result = cortex_graph.invoke({"messages": [system_prompt, user_prompt]})
         
-        # 4. Extract the final markdown string from the agent's memory
+        # 4. Extract the final markdown string and forcefully scrub any hallucinated quotes
         final_message = result["messages"][-1].content
+        clean_message = final_message.replace('"""', '').replace("'''", "").strip()
         
         print("✅ Live AI Response Successfully Generated!")
-        return {"summary": final_message}
+        return {"summary": clean_message}
         
     except Exception as e:
         print(f"🚨 CRITICAL AI ERROR REVEALED: {str(e)}")
         return {"summary": f"⚠️ Live AI connection offline. Displaying cached analysis."}
 
 @app.post("/api/save_orders")
+# ... existing code ...
 def save_orders(request: SaveOrdersRequest):
     print(f"\n--- AWS SYNC ACTIVATED FOR DATE: {request.date} ---")
     if not request.orders:

@@ -55,3 +55,4 @@ app.post('/api/auth/login', (req, res) => {
 });
 
 app.listen(4000, () => console.log('🔐 Dedicated Auth Server running on port 4000'));
+
