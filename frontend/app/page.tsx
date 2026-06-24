@@ -17,22 +17,22 @@ export default function CortexDashboard() {
   const [syncStatus, setSyncStatus] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"dashboard" | "procurement">("dashboard");
 
-  // CLOUD FIX: Points directly to your running FastAPI backend (without /docs)
-  const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL || "http://13.206.119.97:8000";
-  
-  // CLOUD FIX: Point this to the upcoming Auth Frontend URL (we can use localhost for now, or update it later)
+  // CLOUD FIX: Point this to the upcoming Auth Frontend URL
   const AUTH_PORTAL_URL = process.env.NEXT_PUBLIC_AUTH_PORTAL_URL || "https://master.di7fhjhw0ua49.amplifyapp.com/";
 
-
-  // --- 2. API FUNCTIONS ---
+  // --- 2. API FUNCTIONS (UPGRADED TO USE PROXY BRIDGE) ---
   const draftOrders = async () => {
-    setIsScanning(true); // Matches your Scan button
+    setIsScanning(true); 
     setAiSummary(""); 
     try {
-      const res = await fetch(`${API_BASE}/api/generate_orders`, {
+      // PROXY HANDSHAKE: Send payload via secure Next.js bridge
+      const res = await fetch(`/api/proxy`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ target_date: targetDate }),
+        body: JSON.stringify({ 
+          endpoint: "/api/generate_orders",
+          payload: { target_date: targetDate }
+        }),
       });
       const data = await res.json();
       
@@ -41,21 +41,25 @@ export default function CortexDashboard() {
         setAlarms(data.alarms || []);
         if (data.alarms?.length > 0) setActiveTab("dashboard");
       } else {
-        alert("Error generating orders: " + data.detail);
+        alert("Error generating orders: " + (data.detail || data.message));
       }
     } catch (err) {
-      alert("Failed to connect to backend engine.");
+      alert("Failed to connect to backend engine proxy.");
     }
     setIsScanning(false);
   };
 
   const askAgent = async () => {
-    setIsThinking(true); // Matches your AI button
+    setIsThinking(true); 
     try {
-      const res = await fetch(`${API_BASE}/api/ask`, {
+      // PROXY HANDSHAKE
+      const res = await fetch(`/api/proxy`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ target_date: targetDate }),
+        body: JSON.stringify({ 
+          endpoint: "/api/ask",
+          payload: { target_date: targetDate }
+        }),
       });
       const data = await res.json();
       setAiSummary(data.summary);
@@ -69,10 +73,14 @@ export default function CortexDashboard() {
   const syncToAWS = async () => {
     setSyncStatus("Syncing to DynamoDB...");
     try {
-      const res = await fetch(`${API_BASE}/api/save_orders`, {
+      // PROXY HANDSHAKE
+      const res = await fetch(`/api/proxy`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ date: targetDate, orders: orders }),
+        body: JSON.stringify({ 
+          endpoint: "/api/save_orders",
+          payload: { date: targetDate, orders: orders }
+        }),
       });
       
       if (res.ok) {
