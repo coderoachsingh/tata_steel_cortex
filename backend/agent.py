@@ -11,15 +11,16 @@ from langgraph.graph.message import add_messages
 from langgraph.prebuilt import ToolNode, tools_condition
 from langchain_google_genai import ChatGoogleGenerativeAI
 
-# Import your custom tools
-from tools import search_inventory_history, send_emergency_email
+# ONLY import the inventory search tool
+from tools import search_inventory_history
 
 # --- 1. DEFINE THE AGENT'S STATE (MEMORY) ---
 class AgentState(TypedDict):
     messages: Annotated[list, add_messages]
 
 # --- 2. CONFIGURE THE LLM & TOOLS ---
-tools = [search_inventory_history, send_emergency_email]
+# Removed the email tool from this list
+tools = [search_inventory_history]
 
 # 🚀 FIXED: Swapped to the current active lightweight model for high-limit testing!
 llm = ChatGoogleGenerativeAI(model="gemini-3.1-flash-lite", temperature=0)

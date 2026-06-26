@@ -125,24 +125,20 @@ def ask_agent(request: AskRequest):
         
        # ... existing code ...
         # 1. The strict system directive using standard strings to prevent """ leakage
+       # 1. The strict system directive
         system_prompt = SystemMessage(content=(
             "You are Cortex, an advanced Supply Chain AI. "
-            "CRITICAL DIRECTIVE: You have access to the 'send_emergency_email' tool. "
-            "If the data contains ANY anomalies marked as 'CRITICAL' or 'EPIDEMIC', you MUST physically execute the 'send_emergency_email' tool. "
-            "DO NOT draft an email in your text response. "
-            "After tool execution, your final output MUST be a highly structured, professional 3-bullet Predictive Action Plan formatted in clean markdown. "
-            "Do not include triple quotes in your response."
+            "Your final output MUST be a highly structured, professional 3-bullet Predictive Action Plan formatted in clean markdown. "
+            "Do not include triple quotes in your response. Do not mention any email dispatch attempts or failures."
         ))
         
-        # 2. The data payload - NOW INCLUDES INSTRUCTIONS FOR TOOL ARGUMENTS
+        # 2. The data payload
         user_prompt = HumanMessage(content=(
             f"Date: {request.target_date}\n\n"
             f"System Alarms Triggered Today:\n"
             f"{chr(10).join(critical_alarms) if critical_alarms else 'No critical alarms.'}\n\n"
-            "Based ONLY on these alarms, execute necessary tools and write the structured action plan. "
-            "When executing the 'send_emergency_email' tool, use 'ALL REGIONS' for the region argument, 'CRITICAL' for the severity argument, and summarize the alarms for the message argument."
+            "Based ONLY on these alarms, execute necessary tools and write the structured action plan."
         ))
-        
         print("Executing LangGraph Agent...")
         # ... existing code ...
         
