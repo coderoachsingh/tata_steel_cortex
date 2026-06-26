@@ -2,6 +2,8 @@ import os
 import boto3
 from langchain_core.tools import tool
 
+# ... (keep your existing setup_retriever and search_inventory_history functions) ...
+
 @tool
 def send_emergency_email(region: str, severity: str, message: str) -> str:
     """
