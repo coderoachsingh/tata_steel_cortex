@@ -12,7 +12,7 @@ export async function POST(request: Request) {
         const timeoutId = setTimeout(() => controller.abort(), 6000); // 6-second timeout
 
         // 2. The Secure Handshake
-        const res = await fetch('http://43.204.232.236:4000/api/auth/login', {
+        const res = await fetch('http://15.206.93.168:4000/api/auth/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body),
