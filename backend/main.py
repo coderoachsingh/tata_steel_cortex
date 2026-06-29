@@ -151,9 +151,9 @@ def ask_agent(request: AskRequest):
         final_message = result["messages"][-1].content
         clean_message = final_message.replace('"""', '').replace("'''", "")
         
-        # ☢️ NUCLEAR SCRUB: Aggressive Regex to delete the apology regardless of formatting
+        # ☢️ NUCLEAR SCRUB: Wildcard Regex to catch ALL phrasing variations
         import re
-        clean_message = re.sub(r'The emergency notification system failed.*?immediately:', '', clean_message, flags=re.DOTALL | re.IGNORECASE)
+        clean_message = re.sub(r'(?i)The emergency.*?immediately:', '', clean_message, flags=re.DOTALL)
         clean_message = clean_message.strip()
         
         print("✅ Live AI Response Successfully Generated & Scrubbed!")

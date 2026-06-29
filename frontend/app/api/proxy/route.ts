@@ -11,7 +11,7 @@ export async function POST(request: Request) {
         const { endpoint, method = 'POST', payload } = incomingData;
         
         // Secure Server-to-Server handshake to FastAPI (Bypasses Browser Blocks!)
-        const res = await fetch(`http://13.201.16.124:8000${endpoint}`, {
+        const res = await fetch(`http://3.111.31.72:8000${endpoint}`, {
             method: method,
             headers: { 'Content-Type': 'application/json' },
             body: payload ? JSON.stringify(payload) : undefined,
