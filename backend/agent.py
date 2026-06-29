@@ -1,7 +1,6 @@
 import os
 from dotenv import load_dotenv
 
-# 🚨 CRITICAL: Load environment variables FIRST before initializing the LLM
 load_dotenv()
 
 from typing import Annotated
@@ -11,32 +10,25 @@ from langgraph.graph.message import add_messages
 from langgraph.prebuilt import ToolNode, tools_condition
 from langchain_google_genai import ChatGoogleGenerativeAI
 
-# ONLY import the inventory search tool
+# 🚨 ONLY IMPORT THE SEARCH TOOL. NO EMAIL TOOL.
 from tools import search_inventory_history
 
-# --- 1. DEFINE THE AGENT'S STATE (MEMORY) ---
 class AgentState(TypedDict):
     messages: Annotated[list, add_messages]
 
-# --- 2. CONFIGURE THE LLM & TOOLS ---
-# Removed the email tool from this list
+# 🚨 ONLY GIVE THE AI THE SEARCH TOOL.
 tools = [search_inventory_history]
 
-# 🚀 FIXED: Swapped to the current active lightweight model for high-limit testing!
 llm = ChatGoogleGenerativeAI(model="gemini-3.1-flash-lite", temperature=0)
 llm_with_tools = llm.bind_tools(tools)
 
-# --- 3. DEFINE THE ANALYST NODE (THE BRAIN) ---
 def analyst_node(state: AgentState):
     response = llm_with_tools.invoke(state["messages"])
     return {"messages": [response]}
 
-# --- 4. CONSTRUCT THE GRAPH WORKFLOW ---
 builder = StateGraph(AgentState)
-
 builder.add_node("analyst", analyst_node)
 builder.add_node("tools", ToolNode(tools))
-
 builder.add_edge(START, "analyst")
 builder.add_conditional_edges("analyst", tools_condition)
 builder.add_edge("tools", "analyst")

@@ -1,4 +1,5 @@
 import os
+import re
 from dotenv import load_dotenv
 
 # 🚨 CRITICAL: Load .env FIRST before importing LangGraph modules
@@ -146,20 +147,13 @@ def ask_agent(request: AskRequest):
         # 3. Fire the actual LangGraph agent
         result = cortex_graph.invoke({"messages": [system_prompt, user_prompt]})
         
-        # 4. Extract the final markdown string and forcefully scrub any hallucinated quotes
+# 4. Extract the final markdown string
         final_message = result["messages"][-1].content
         clean_message = final_message.replace('"""', '').replace("'''", "")
         
-        # ☢️ NUCLEAR SCRUB: Forcibly delete the specific hallucinated apologies
-        apologies = [
-            "The emergency notification system failed to dispatch the alert due to authentication errors.",
-            "Please manually escalate the following Predictive Action Plan to the warehouse management team immediately:",
-            "Please manually escalate the following Predictive Action Plan to the relevant warehouse managers immediately:"
-        ]
-        
-        for apology in apologies:
-            clean_message = clean_message.replace(apology, "")
-            
+        # ☢️ NUCLEAR SCRUB: Aggressive Regex to delete the apology regardless of formatting
+        import re
+        clean_message = re.sub(r'The emergency notification system failed.*?immediately:', '', clean_message, flags=re.DOTALL | re.IGNORECASE)
         clean_message = clean_message.strip()
         
         print("✅ Live AI Response Successfully Generated & Scrubbed!")
