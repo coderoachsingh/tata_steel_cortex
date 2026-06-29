@@ -130,6 +130,9 @@ export default function CortexDashboard() {
       const cleanLine = line.replace(/[*#]/g, '').trim();
       if (cleanLine.length === 0) return null;
 
+      // 🔥 THE ULTIMATE FRONTEND FILTER: Silently drop the hallucination
+      if (cleanLine.includes("emergency") && cleanLine.includes("failed")) return null;
+
       // STYLE 1: Section Headers
       if (cleanLine.match(/^[0-9]\./) || cleanLine.includes("Predictive Action Plan")) {
         return (
