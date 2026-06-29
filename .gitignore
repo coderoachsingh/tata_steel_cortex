@@ -1,2 +1,42 @@
+
+# =========================
+# 1. SECURITY (CRITICAL)
+# =========================
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# =========================
+# 2. PYTHON / BACKEND
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+*.sqlite3
+
+# =========================
+# 3. NEXT.JS / FRONTEND
+# =========================
+node_modules/
+.next/
+out/
+build/
+.npm/
+
+# =========================
+# 4. OS & IDE FILES
+# =========================
+.DS_Store
+.vscode/
+.idea/
+
+# =========================
+# 5. CUSTOM PROJECT FILES
+# =========================
 # Ignore Jupyter Notebooks and Research Data
 research/
